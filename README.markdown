@@ -132,3 +132,4 @@ The theme can then be applied to a table.
 ## Changes Needed to Upgrade From 0.3
 
 1. The hidden `sort` and `dir` fields should be removed from the `filters/_form.html.erb` partial and replaced with `<%= tableficate_hidden_tags(table) %>`.
+2. The :as option on table_for has been removed. This is now set on the tableficate scope using :param_namespace. The first parameter to tableficate should now be the params hash. This means that `tableficate(params[:foo])` will now be `tableficate(params)`.

@@ -2,6 +2,8 @@
  * the match option on filters takes symbols
  * adding support for hidden filters
  * sort and dir hidden field moved from the template into the tableficate_hidden_tags helper
+ * :as option removed from table_for
+ * :param_namespace option added to tableficate (replaces :as from table_for)
 
 ## 0.3.2
  * fix join table name finder in find_column_type

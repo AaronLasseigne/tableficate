@@ -76,7 +76,7 @@ describe Tableficate::Base do
 
       filter(:first_name, match: :contains)
     end
-    npw = FilterByContainsInput.tableficate({filter: {first_name: 'Al'}})
+    npw = FilterByContainsInput.tableficate({nobel_prize_winners: {filter: {first_name: 'Al'}}})
     npw.size.should == 1
     npw.first.first_name.should == 'Albert'
   end
@@ -87,7 +87,7 @@ describe Tableficate::Base do
 
       filter(:first_name, match: :contains)
     end
-    npw = FilterByContainsInput.tableficate({filter: {first_name: ['Al', 'Mar']}})
+    npw = FilterByContainsInput.tableficate({nobel_prize_winners: {filter: {first_name: ['Al', 'Mar']}}})
     npw.size.should == 2
     npw.first.first_name.should == 'Albert'
     npw.last.first_name.should == 'Marie'
@@ -107,7 +107,7 @@ describe Tableficate::Base do
         end 
       end 
     end
-    npw = BlockFilter.tableficate({filter: {full_name: 'Bohr'}})
+    npw = BlockFilter.tableficate({nobel_prize_winners: {filter: {full_name: 'Bohr'}}})
     npw.first.first_name.should == 'Niels'
   end
 end

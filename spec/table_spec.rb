@@ -2,19 +2,22 @@ require 'spec_helper'
 
 describe Tableficate::Table do
   before(:each) do
-    template = mock('Template')
-    template.stub!(:lookup_context).and_return(ActionView::LookupContext.new([]))
-    template.lookup_context.stub!(:exists?).and_return(true)
-    @table = Tableficate::Table.new(template, NobelPrizeWinner.joins(:nobel_prizes).limit(1), {}, {current_sort: {column: :first_name, dir: 'asc'}})
+    @template = mock('Template')
+    @template.stub!(:lookup_context).and_return(ActionView::LookupContext.new([]))
+    @template.lookup_context.stub!(:exists?).and_return(true)
+    @npw = NobelPrizeWinner.joins(:nobel_prizes).limit(1)
+    @table = Tableficate::Table.new(@template, @npw, {}, {current_sort: {column: :first_name, dir: 'asc'}})
   end
 
   it 'should have the current sort if provided' do
     @table.current_sort.should == {column: :first_name, dir: 'asc'}
   end
 
-  it 'should use the :as option or default to the table_name of the scope' do
-    Tableficate::Table.new(nil, NobelPrizeWinner.limit(1), {as: 'npw'}, {}).as.should == 'npw'
-    @table.as.should == 'nobel_prize_winners'
+  context ':param_namespace in the tableficate_data hash' do
+    it 'is provided then use provided string' do
+      table = Tableficate::Table.new(@template, @npw, {}, {param_namespace: 'foo'})
+      table.param_namespace.should == 'foo'
+    end
   end
 
   it 'should add a empty' do
@@ -188,10 +191,7 @@ describe Tableficate::Table do
   end
 
   it 'should default the type based on the actual field, not the label' do
-    template = mock('Template')
-    template.stub!(:lookup_context).and_return(ActionView::LookupContext.new([]))
-    template.lookup_context.stub!(:exists?).and_return(true)
-    table = Tableficate::Table.new(template, NobelPrizeWinner.joins(:nobel_prizes).limit(1), {}, {field_map: {foo: 'year'}})
+    table = Tableficate::Table.new(@template, @npw, {}, {field_map: {foo: 'year'}})
 
     table.filter(:foo)
 

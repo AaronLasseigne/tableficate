@@ -17,7 +17,7 @@ describe Tableficate::Filter::Base do
   end
 
   it 'should provide a field name' do
-    @first_name_filter.field_name.should == "#{@table.as}[filter][first_name]"
+    @first_name_filter.field_name.should == "#{@table.param_namespace}[filter][first_name]"
   end
 
   it 'should provide a field value when given params or a blank value' do
