@@ -45,11 +45,8 @@ module Tableficate
     def tableficate_hidden_tags(table)
       html = []
 
-      if params[table.param_namespace] and params[table.param_namespace][:sort] 
-        html.push(hidden_field_tag("#{table.param_namespace}[sort]", params[table.param_namespace][:sort]))
-      end 
-      if params[table.param_namespace] and params[table.param_namespace][:dir] 
-        html.push(hidden_field_tag("#{table.param_namespace}[dir]", params[table.param_namespace][:dir]))
+      if params[table.param_namespace] and params[table.param_namespace][:order] 
+        html.push(hidden_field_tag("#{table.param_namespace}[order]", params[table.param_namespace][:order]))
       end 
 
       table.hidden_filters.each do |filter|

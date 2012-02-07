@@ -46,15 +46,6 @@ describe Tableficate::Finder do
       end
     end
 
-    it 'should attach the table name to the fields from the primary table to avoid ambiguity' do
-      npw = NobelPrizeWinner.joins(:nobel_prizes).tableficate({nobel_prize_winners: {sort: 'first_name'}})
-      npw.order_values.should == ["#{npw.table_name}.first_name ASC"]
-
-      # secondary table fields are left vague for maximum flexibility
-      npw = NobelPrizeWinner.joins(:nobel_prizes).tableficate({nobel_prize_winners: {sort: 'year'}})
-      npw.order_values.should == ["year ASC"]
-    end
-
     it 'should allow ranged input filters' do
       np = NobelPrize.tableficate({nobel_prizes: {filter: {year: {start: 1900, stop: 1930}}}})
       np.size.should == 4

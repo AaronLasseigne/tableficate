@@ -1,8 +1,7 @@
 <%= content_tag(:th, column.header_attrs) do %>
   <%= column.header %>
-  <% table_params = (params[column.table.param_namespace] || {}) %>
   <% if column.show_sort? %>
-    <%= link_to 'A', url_for(params.merge(column.table.param_namespace => table_params.merge({sort: column.name.to_s, dir: 'asc'}))) %><% if column.is_sorted?('asc') %>*<% end %>
-    <%= link_to 'D', url_for(params.merge(column.table.param_namespace => table_params.merge({sort: column.name.to_s, dir: 'desc'}))) %><% if column.is_sorted?('desc') %>*<% end %>
+    <%= link_with_order('A', column.table.rows, column.name, dir: :asc) %><% if column.is_sorted?('asc') %>*<% end %>
+    <%= link_with_order('D', column.table.rows, column.name, dir: :desc) %><% if column.is_sorted?('desc') %>*<% end %>
   <% end %>
 <% end %>

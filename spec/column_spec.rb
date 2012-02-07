@@ -74,7 +74,12 @@ describe Tableficate::Column do
   end
 
   it 'should indicate whether a column is sorted or not' do
-    table = Tableficate::Table.new(nil, NobelPrizeWinner.limit(1), {}, {current_sort: {column: :first_name, dir: 'asc'}})
+    class DefaultOrder < Tableficate::Base
+      scope(:nobel_prize_winner)
+
+      default_sort(:first_name)
+    end
+    table = Tableficate::Table.new(nil, DefaultOrder.tableficate({}), {}, {})
 
     column = Tableficate::Column.new(table, :first_name)
     column.is_sorted?('asc').should be true

@@ -84,20 +84,12 @@ module Tableficate
       end
 
       # sorting
-      column = scoped_params.try(:[], :sort).try(:gsub, /\W/, '') || @default_sort.try(:[], 0)
-      dir = (scoped_params.try(:[], :dir) || @default_sort.try(:[], 1) || 'asc').downcase
-      if column.present?
-        scope = scope.order(@sort.try(:[], column.to_sym) || "#{get_full_column_name(column.to_s)} ASC")
-        scope = scope.reverse_order if dir == 'desc'
-      end
+      with_order_options = {param_namespace: scope.tableficate_data[:param_namespace]}
+      with_order_options[:default] = @default_sort.join('-') if @default_sort
+      with_order_options[:fields] = @sort if @sort
+      scope = scope.with_order(params, with_order_options)
 
       # return an arel object with our data attached
-      sorting = {column: nil, dir: nil}
-      if column.present?
-        sorting[:column] = column.to_sym
-        sorting[:dir]    = ['asc', 'desc'].include?(dir) ? dir : 'asc'
-      end
-      scope.tableficate_data[:current_sort] = sorting
       filters_with_field = @filter ? @filter.select{|name, options| not options.is_a?(Proc) and options and options.has_key?(:field)} : {}
       scope.tableficate_data[:field_map] = Hash[filters_with_field.map{|name, options| [name, options[:field]]}]
       scope

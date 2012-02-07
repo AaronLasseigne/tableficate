@@ -20,9 +20,7 @@ describe 'Tableficate::ActiveRecordExtention' do
       default_sort(:first_name)
     end
     scope = NobelPrizeWinnerWithDefaultSorting.tableficate({}).all
-    scope.tableficate_data[:current_sort].should == {column: :first_name, dir: 'asc'}
-
-    scope = NobelPrizeWinnerWithDefaultSorting.tableficate({}).find(1,2)
-    scope.tableficate_data[:current_sort].should == {column: :first_name, dir: 'asc'}
+    scope.tableficate_data[:field_map].should == {}
+    scope.tableficate_data[:param_namespace].should == 'nobel_prize_winners'
   end
 end

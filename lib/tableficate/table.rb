@@ -1,6 +1,6 @@
 module Tableficate
   class Table
-    attr_reader :columns, :rows, :current_sort, :filters, :attrs, :param_namespace, :template, :theme
+    attr_reader :columns, :rows, :filters, :attrs, :param_namespace, :template, :theme
 
     def initialize(template, rows, options, data)
       @template = template
@@ -14,7 +14,6 @@ module Tableficate
       @filters = []
 
       @param_namespace = data[:param_namespace]
-      @current_sort    = data[:current_sort]
       @field_map       = data[:field_map] || {}
     end
 

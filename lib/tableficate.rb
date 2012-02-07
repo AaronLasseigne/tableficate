@@ -1,3 +1,4 @@
+require 'with_order'
 require 'tableficate/engine'
 require 'tableficate/exceptions'
 require 'tableficate/utils'

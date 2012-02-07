@@ -35,7 +35,7 @@ describe Tableficate::Base do
       default_sort(:first_name)
     end
     npw = DefaultOrder.tableficate({})
-    npw.order_values.should == ["#{npw.table_name}.first_name ASC"]
+    npw.order_values.should == ["\"#{npw.table_name}.first_name\" ASC"]
     npw.reverse_order_value.should == nil
 
     class DefaultOrderDesc < Tableficate::Base
@@ -44,7 +44,7 @@ describe Tableficate::Base do
       default_sort(:first_name, 'desc')
     end
     npw = DefaultOrderDesc.tableficate({})
-    npw.order_values.should == ["#{npw.table_name}.first_name ASC"]
+    npw.order_values.should == ["\"#{npw.table_name}.first_name\" ASC"]
     npw.reverse_order_value.should be true
 
     class DefaultOrderWithOverride < Tableficate::Base

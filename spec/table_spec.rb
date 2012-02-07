@@ -6,11 +6,7 @@ describe Tableficate::Table do
     @template.stub!(:lookup_context).and_return(ActionView::LookupContext.new([]))
     @template.lookup_context.stub!(:exists?).and_return(true)
     @npw = NobelPrizeWinner.joins(:nobel_prizes).limit(1)
-    @table = Tableficate::Table.new(@template, @npw, {}, {current_sort: {column: :first_name, dir: 'asc'}})
-  end
-
-  it 'should have the current sort if provided' do
-    @table.current_sort.should == {column: :first_name, dir: 'asc'}
+    @table = Tableficate::Table.new(@template, @npw, {}, {})
   end
 
   context ':param_namespace in the tableficate_data hash' do
