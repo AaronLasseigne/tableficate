@@ -5,9 +5,9 @@ require "tableficate/version"
 Gem::Specification.new do |s|
   s.name        = "tableficate"
   s.version     = Tableficate::VERSION
-  s.authors     = ["Aaron Lasseigne"]
-  s.email       = ["alasseigne@sei-mi.com"]
-  s.homepage    = "https://github.com/sei-mi/tableficate"
+  s.authors     = ['Aaron Lasseigne']
+  s.email       = ['aaron.lasseigne@gmail.com']
+  s.homepage    = 'https://github.com/AaronLasseigne/tableficate'
   s.summary     = %q{A DSL for Rails that provides easy table creation with sorting and filtering.}
   s.description = %q{A DSL for Rails that provides easy table creation with sorting and filtering.}
 
