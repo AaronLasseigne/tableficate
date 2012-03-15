@@ -1,28 +1,28 @@
 # -*- encoding: utf-8 -*-
-$:.push File.expand_path("../lib", __FILE__)
-require "tableficate/version"
+require File.expand_path('../lib/tableficate/version', __FILE__)
 
-Gem::Specification.new do |s|
-  s.name        = "tableficate"
-  s.version     = Tableficate::VERSION
-  s.authors     = ['Aaron Lasseigne']
-  s.email       = ['aaron.lasseigne@gmail.com']
-  s.homepage    = 'https://github.com/AaronLasseigne/tableficate'
-  s.summary     = %q{A DSL for Rails that provides easy table creation with sorting and filtering.}
-  s.description = %q{A DSL for Rails that provides easy table creation with sorting and filtering.}
+Gem::Specification.new do |gem|
+  gem.name        = 'tableficate'
+  gem.version     = Tableficate::VERSION
 
-  s.rubyforge_project = "tableficate"
+  gem.authors     = ['Aaron Lasseigne']
+  gem.email       = ['aaron.lasseigne@gmail.com']
+  gem.summary     = %q{A DSL for Rails that provides easy table creation with sorting and filtering.}
+  gem.description = %q{A DSL for Rails that provides easy table creation with sorting and filtering.}
+  gem.homepage    = 'https://github.com/AaronLasseigne/tableficate'
 
-  s.files         = `git ls-files`.split("\n")
-  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
-  s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
-  s.require_paths = ["lib"]
+  gem.rubyforge_project = 'tableficate'
 
-  s.add_dependency 'rails', '>= 3.1'
+  gem.files         = `git ls-files`.split("\n")
+  gem.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
+  gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+  gem.require_paths = ['lib']
 
-  s.add_development_dependency 'rake'
-  s.add_development_dependency 'rspec'
-  s.add_development_dependency 'genspec'
-  s.add_development_dependency 'sqlite3'
-  s.add_development_dependency 'capybara'
+  gem.add_dependency 'rails', '>= 3.1'
+
+  gem.add_development_dependency 'rake'
+  gem.add_development_dependency 'rspec'
+  gem.add_development_dependency 'genspec'
+  gem.add_development_dependency 'sqlite3'
+  gem.add_development_dependency 'capybara'
 end
