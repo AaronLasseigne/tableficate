@@ -1,5 +1,5 @@
 # Tableficate
-A DSL for easy table creation with sorting and filtering. It tries to do to tables what simple_form and formtastic have done for forms. Below you'll find basic documentation with more compelete docs in the [wiki](https://github.com/sei-mi/tableficate/wiki).
+A DSL for easy table creation with sorting and filtering. It tries to do to tables what simple_form and formtastic have done for forms. Below you'll find basic documentation with more compelete docs in the [wiki](https://github.com/AaronLasseigne/tableficate/wiki).
 
 This project follows [Semantic Versioning](http://semver.org/).
 
@@ -127,7 +127,7 @@ The theme can then be applied to a table.
       ...
     <% end %>
     
-[Find out more about themes.](https://github.com/sei-mi/tableficate/wiki/Custom-Themes)
+[Find out more about themes.](https://github.com/AaronLasseigne/tableficate/wiki/Custom-Themes)
 
 ## Changes Needed to Upgrade From 0.3
 
