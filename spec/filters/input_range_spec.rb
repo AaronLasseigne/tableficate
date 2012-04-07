@@ -11,7 +11,7 @@ describe Tableficate::Filter::InputStart do
   end
 
   it 'should append "[start]" to field_name' do
-    @input_start_filter.field_name == "#{@table.as}[filter][year][start]"
+    @input_start_filter.field_name == "#{@table.param_namespace}[filter][year][start]"
   end
 
   it 'should append "_start" to the name' do
@@ -35,7 +35,7 @@ describe Tableficate::Filter::InputStop do
   end
 
   it 'should append "[stop]" to field_name' do
-    @input_stop_filter.field_name == "#{@table.as}[filter][year][stop]"
+    @input_stop_filter.field_name == "#{@table.param_namespace}[filter][year][stop]"
   end
 
   it 'should append "_stop" to the name' do

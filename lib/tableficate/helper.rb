@@ -39,17 +39,14 @@ module Tableficate
     end
 
     def tableficate_text_field_tag(filter)
-      text_field_tag(filter.field_name, filter.field_value(params[filter.table.as]), filter.attrs)
+      text_field_tag(filter.field_name, filter.field_value(params[filter.table.param_namespace]), filter.attrs)
     end
 
     def tableficate_hidden_tags(table)
       html = []
 
-      if params[table.as] and params[table.as][:sort] 
-        html.push(hidden_field_tag("#{table.as}[sort]", params[table.as][:sort]))
-      end 
-      if params[table.as] and params[table.as][:dir] 
-        html.push(hidden_field_tag("#{table.as}[dir]", params[table.as][:dir]))
+      if params[table.param_namespace] and params[table.param_namespace][:order] 
+        html.push(hidden_field_tag("#{table.param_namespace}[order]", params[table.param_namespace][:order]))
       end 
 
       table.hidden_filters.each do |filter|
@@ -60,7 +57,7 @@ module Tableficate
     end
 
     def tableficate_select_tag(filter)
-      field_value = filter.field_value(params[filter.table.as])
+      field_value = filter.field_value(params[filter.table.param_namespace])
 
       collection = filter.collection
 
@@ -92,7 +89,7 @@ module Tableficate
 
     def tableficate_check_box_tags(filter)
       if filter.collection.empty?
-        check_box_tag(filter.field_name, true, filter.field_value(params[filter.table.as]) == 'true', filter.attrs)
+        check_box_tag(filter.field_name, true, filter.field_value(params[filter.table.param_namespace]) == 'true', filter.attrs)
       else
         tableficate_collection_of_tags(filter)
       end
@@ -100,7 +97,7 @@ module Tableficate
 
     def tableficate_collection_of_tags(filter)
       table       = filter.table
-      field_value = filter.field_value(params[filter.table.as])
+      field_value = filter.field_value(params[filter.table.param_namespace])
 
       html = []
       Tableficate::Filter::Collection.new(filter.collection, selected: field_value).each do |choice|

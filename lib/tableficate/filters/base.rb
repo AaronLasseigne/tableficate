@@ -12,7 +12,7 @@ module Tableficate
         @attrs         = options
 
         @template   = 'filters/' + self.class.name.demodulize.underscore
-        @field_name = "#{table.as}[filter][#{@name}]"
+        @field_name = "#{table.param_namespace}[filter][#{@name}]"
       end
 
       def field_value(params)

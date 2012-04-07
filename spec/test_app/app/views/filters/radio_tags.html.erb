@@ -8,7 +8,6 @@
   t.column :year 
 
   t.filter :category,
-    as:            :radio,
-    collection:    ['Chemistry', 'Literature', 'Peace', 'Physics', 'Physiology or Medicine'],
-    include_blank: true
+    as:         :radio,
+    collection: ['Chemistry', 'Literature', 'Peace', 'Physics', 'Physiology or Medicine']
 end %>

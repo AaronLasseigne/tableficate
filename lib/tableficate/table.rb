@@ -1,12 +1,11 @@
 module Tableficate
   class Table
-    attr_reader :columns, :rows, :current_sort, :filters, :attrs, :as, :template, :theme
+    attr_reader :columns, :rows, :filters, :attrs, :param_namespace, :template, :theme
 
     def initialize(template, rows, options, data)
       @template = template
       @rows     = rows
 
-      @as         = options.delete(:as) || rows.table_name
       @theme      = options.delete(:theme) || ''
       @show_sorts = options.delete(:show_sorts) || false
       @attrs      = options
@@ -14,8 +13,8 @@ module Tableficate
       @columns = []
       @filters = []
 
-      @current_sort = data[:current_sort]
-      @field_map    = data[:field_map] || {}
+      @param_namespace = data[:param_namespace]
+      @field_map       = data[:field_map] || {}
     end
 
     def hidden_filters
