@@ -18,11 +18,12 @@ Gem::Specification.new do |gem|
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   gem.require_paths = ['lib']
 
-  gem.add_dependency 'rails', '>= 3.1'
-  gem.add_dependency 'with_order', '~> 0.1.0'
+  gem.add_dependency 'rails',        '>= 3.1'
+  gem.add_dependency 'with_order',   '~> 0.1.0'
+  gem.add_dependency 'with_filters', '~> 0.1.2'
 
   gem.add_development_dependency 'rake'
-  gem.add_development_dependency 'rspec'
+  gem.add_development_dependency 'rspec-rails'
   gem.add_development_dependency 'genspec'
   gem.add_development_dependency 'sqlite3'
   gem.add_development_dependency 'capybara'

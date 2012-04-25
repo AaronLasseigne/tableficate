@@ -1,0 +1,15 @@
+<%= filter_form_for(table.rows, table.attrs[:theme] || {}) do |f| %>
+  <% if params[table.param_namespace] and params[table.param_namespace][:order] %>
+    <% f.hidden(:order, name: "#{table.param_namespace}[order]", value: params[table.param_namespace][:order]) %>
+  <% end %>
+
+  <% table.hidden_filters.each do |hidden_filter| %>
+    <% f.hidden(*hidden_filter) %>
+  <% end %>
+
+  <% table.filters.each do |filter| %>
+    <% f.send(*filter) %>
+  <% end %>
+
+  <% f.action(:submit, label: 'Filter') %>
+<% end %>

@@ -27,7 +27,7 @@ module Tableficate
         @filter[name] = block
       else
         options.reverse_merge!(
-          field: name
+          column: name
         )
 
         @filter[name] = options

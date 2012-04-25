@@ -1,4 +1,6 @@
-<%= tableficate_filter_form_tag(table) %>
+<% if table.filters.any? %>
+  <%= tableficate_filter_form_for(table) %>
+<% end %>
 
 <% if defined? ::Kaminari %>
   <%= paginate(table.rows, param_name: "#{table.param_namespace}_page") %>

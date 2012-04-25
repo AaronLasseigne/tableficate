@@ -93,135 +93,24 @@ describe Tableficate::Table do
     @table.filter(:first_name, label: 'First')
     @table.filter(:last_name, label: 'Last')
 
-    @table.filters.first.name.should == :first_name
-    @table.filters.first.is_a?(Tableficate::Filter::Input).should be true
-    @table.filters.last.name.should == :last_name
-  end
-
-  it 'should raise an error if Input is passed an unknown type' do
-    lambda {@table.filter(:first_name, as: :foo)}.should raise_error(Tableficate::Filter::UnknownInputType)
-  end
-
-  it 'should add the Input for known types and pass through the type based on :as' do
-    @table.filter(:first_name, as: :search)
-
-    @table.filters.first.is_a?(Tableficate::Filter::Input).should be true
-    @table.filters.first.attrs[:type].should == 'search'
-  end
-
-  it 'should default the type to "checkbox" for boolean fields' do
-    @table.filter(:shared)
-
-    @table.filters.first.is_a?(Tableficate::Filter::CheckBox).should be true
-    @table.filters.first.attrs[:type].should == 'checkbox'
-  end
-
-  it 'should default the type to "email" for string fields with "email" somewhere in the name' do
-    @table.filter(:email)
-
-    @table.filters.first.is_a?(Tableficate::Filter::Input).should be true
-    @table.filters.first.attrs[:type].should == 'email'
-  end
-
-  it 'should default the type to "url" for string fields with "url" somewhere in the name' do
-    @table.filter(:url)
-
-    @table.filters.first.is_a?(Tableficate::Filter::Input).should be true
-    @table.filters.first.attrs[:type].should == 'url'
-  end
-
-  it 'should default the type to "tel" for string fields with "phone" somewhere in the name' do
-    @table.filter(:home_phone)
-
-    @table.filters.first.is_a?(Tableficate::Filter::Input).should be true
-    @table.filters.first.attrs[:type].should == 'tel'
-  end
-
-  it 'should default the type to "number" for integer fields' do
-    @table.filter(:year)
-
-    @table.filters.first.is_a?(Tableficate::Filter::Input).should be true
-    @table.filters.first.attrs[:type].should == 'number'
-  end
-
-  it 'should default the type to "number" for float fields' do
-    @table.filter(:meaningless_float)
-
-    @table.filters.first.is_a?(Tableficate::Filter::Input).should be true
-    @table.filters.first.attrs[:type].should == 'number'
-  end
-
-  it 'should default the type to "number" for decimal fields' do
-    @table.filter(:meaningless_decimal)
-
-    @table.filters.first.is_a?(Tableficate::Filter::Input).should be true
-    @table.filters.first.attrs[:type].should == 'number'
-  end
-
-  it 'should default the type to "date" for date fields' do
-    @table.filter(:birthdate)
-
-    @table.filters.first.is_a?(Tableficate::Filter::Input).should be true
-    @table.filters.first.attrs[:type].should == 'date'
-  end
-
-  it 'should default the type to "time" for time fields' do
-    @table.filter(:meaningless_time)
-
-    @table.filters.first.is_a?(Tableficate::Filter::Input).should be true
-    @table.filters.first.attrs[:type].should == 'time'
-  end
-
-  it 'should default the type to "datetime" for datetime fields' do
-    @table.filter(:created_at)
-
-    @table.filters.first.is_a?(Tableficate::Filter::Input).should be true
-    @table.filters.first.attrs[:type].should == 'datetime'
-  end
-
-  it 'should default the type to "datetime" for timestamp fields' do
-    @table.filter(:updated_at)
-
-    @table.filters.first.is_a?(Tableficate::Filter::Input).should be true
-    @table.filters.first.attrs[:type].should == 'datetime'
-  end
-
-  it 'should default the type based on the actual field, not the label' do
-    table = Tableficate::Table.new(@template, @npw, {}, {field_map: {foo: 'year'}})
-
-    table.filter(:foo)
-
-    table.filters.first.is_a?(Tableficate::Filter::Input).should be true
-    table.filters.first.attrs[:type].should == 'number'
+    @table.filters.first[1].should == :first_name
+    @table.filters.last[1].should == :last_name
   end
 
   it 'should add a InputRange filter' do
     @table.filter_range(:first_name, label: 'First')
     @table.filter_range(:last_name, label: 'Last')
 
-    @table.filters.first.name.should == :first_name
-    @table.filters.first.is_a?(Tableficate::Filter::InputRange).should be true
-    @table.filters.last.name.should == :last_name
-  end
-
-  it 'should raise an error if InputRange is passed an unknown type' do
-    lambda {@table.filter_range(:first_name, as: :foo)}.should raise_error(Tableficate::Filter::UnknownInputType)
-  end
-
-  it 'should add the InputRange for known types and pass through the type based on :as' do
-    @table.filter_range(:first_name, as: :search)
-
-    @table.filters.first.is_a?(Tableficate::Filter::InputRange).should be true
-    @table.filters.first.attrs[:type].should == 'search'
+    @table.filters.first[1].should == :first_name
+    @table.filters.last[1].should == :last_name
   end
 
   it 'should add a Select filter' do
     @table.filter(:first_name, collection: {}, label: 'First')
     @table.filter(:last_name, collection: {}, label: 'Last')
 
-    @table.filters.first.name.should == :first_name
-    @table.filters.first.is_a?(Tableficate::Filter::Select).should be true
-    @table.filters.last.name.should == :last_name
+    @table.filters.first[1].should == :first_name
+    @table.filters.last[1].should == :last_name
   end
 
   it 'should return hidden_filters' do
@@ -231,16 +120,16 @@ describe Tableficate::Table do
     @table.filter(:visible)
 
     @table.hidden_filters.length.should == 1
-    @table.hidden_filters.first.name.should == :hidden
+    @table.hidden_filters.first[1][:as].should == :hidden
   end
 
   it 'should return visible_filters' do
-    @table.visible_filters.should == []
+    @table.filters.should == []
 
     @table.filter(:hidden, as: :hidden, value: 1)
     @table.filter(:visible)
 
-    @table.visible_filters.length.should == 1
-    @table.visible_filters.first.name.should == :visible
+    @table.filters.length.should == 1
+    @table.filters.first[1].should == :visible
   end
 end

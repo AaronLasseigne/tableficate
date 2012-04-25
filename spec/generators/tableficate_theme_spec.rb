@@ -15,11 +15,4 @@ describe 'tableficate:theme' do
       subject.should generate('app/views/tableficate/foo/_table_for.html.erb')
     end
   end
-
-  with_args :foo, 'filters/form' do
-    it 'should generate a single file in app/views/tableficate/foo/filters' do
-      subject.should generate('app/views/tableficate/foo/filters')
-      subject.should generate('app/views/tableficate/foo/filters/_form.html.erb')
-    end
-  end
 end
