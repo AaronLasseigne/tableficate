@@ -20,11 +20,11 @@ module Tableficate
       @sort[name] = options[:sort] if options[:sort].present?
     end
 
-    def self.filter(name, options = {}, &block)
+    def self.filter(name, options = {})
       @filter ||= {}
 
       if block_given?
-        @filter[name] = block
+        @filter[name] = Proc.new
       else
         options.reverse_merge!(
           column: name

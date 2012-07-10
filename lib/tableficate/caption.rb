@@ -2,10 +2,10 @@ module Tableficate
   class Caption
     attr_reader :attrs
 
-    def initialize(*args, &block)
+    def initialize(*args)
       if block_given?
         @attrs   = args.first || {}
-        @content = block
+        @content = Proc.new
       else
         @content = args[0]
         @attrs   = args[1] || {}

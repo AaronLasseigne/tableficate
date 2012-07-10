@@ -27,19 +27,23 @@ module Tableficate
         map{|filter| filter[1, filter.size - 1]}
     end
 
-    def empty(*args, &block)
-      if args.empty? and not block_given?
-        @empty
+    def empty(*args)
+      if block_given?
+        @empty = Empty.new(self, *args, Proc.new)
+      elsif args.present?
+        @empty = Empty.new(self, *args)
       else
-        @empty = Empty.new(self, *args, &block)
+        @empty
       end
     end
 
-    def caption(*args, &block)
-      if args.empty? and not block_given?
-        @caption
+    def caption(*args)
+      if block_given?
+        @caption = Caption.new(*args, Proc.new)
+      elsif args.present?
+        @caption = Caption.new(*args)
       else
-        @caption = Caption.new(*args, &block)
+        @caption
       end
     end
 
