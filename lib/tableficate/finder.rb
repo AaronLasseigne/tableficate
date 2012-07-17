@@ -21,7 +21,7 @@ module Tableficate
       scope = scope.with_order(params, with_order_options)
 
       # return an arel object with our data attached
-      filters_with_field = @filter ? @filter.select{|name, options| not options.is_a?(Proc) and options and options.has_key?(:field)} : {}
+      filters_with_field = @filter ? @filter.select{|name, options| not options.is_a?(Proc) and options and options.key?(:field)} : {}
       scope.tableficate_data[:field_map] = Hash[filters_with_field.map{|name, options| [name, options[:field]]}]
       scope
     end

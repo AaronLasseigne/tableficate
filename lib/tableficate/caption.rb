@@ -3,13 +3,8 @@ module Tableficate
     attr_reader :attrs
 
     def initialize(*args)
-      if block_given?
-        @attrs   = args.first || {}
-        @content = Proc.new
-      else
-        @content = args[0]
-        @attrs   = args[1] || {}
-      end
+      @content = block_given? ? Proc.new : args.shift
+      @attrs   = args.first || {}
     end
 
     def value

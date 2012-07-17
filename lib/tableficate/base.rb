@@ -3,11 +3,7 @@ module Tableficate
     extend Tableficate::Finder
 
     def self.scope(model = nil)
-      if block_given?
-        @scope = yield
-      else
-        @scope = model.to_s.camelize.constantize
-      end
+      @scope = block_given? ? yield : model.to_s.camelize.constantize
     end
 
     def self.default_sort(name, dir = 'asc')
@@ -23,15 +19,7 @@ module Tableficate
     def self.filter(name, options = {})
       @filter ||= {}
 
-      if block_given?
-        @filter[name] = Proc.new
-      else
-        options.reverse_merge!(
-          column: name
-        )
-
-        @filter[name] = options
-      end
+      @filter[name] = block_given? ? Proc.new : options.reverse_merge(column: name)
     end
   end
 end

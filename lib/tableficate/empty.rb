@@ -1,15 +1,9 @@
 module Tableficate
   class Empty
     def initialize(table, *args)
-      @table = table
-
-      if block_given?
-        @attrs   = args.first || {}
-        @content = Proc.new
-      else
-        @content = args[0]
-        @attrs   = args[1] || {}
-      end
+      @table   = table
+      @content = block_given? ? Proc.new : args.shift
+      @attrs   = args.first || {}
     end
 
     def value
