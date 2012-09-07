@@ -1,96 +1,102 @@
 require 'spec_helper'
 
 describe Tableficate::Column do
-  it 'should show the header provided or default to the column name' do
-    column = Tableficate::Column.new(nil, :first_name)
-    column.header.should == 'First Name'
-
-    column = Tableficate::Column.new(nil, :first_name, header: 'Given Name')
-    column.header.should == 'Given Name'
+  let(:column_name) { :first_name }
+  before(:each) do
+    @table = double('Table')
+    @table.stub_chain(:rows, :current_order).and_return({field: :first_name, dir: :asc})
   end
+  subject { described_class.new(@table, column_name) }
 
-  it 'should take all non-specialized options as attrs on the `col` tag' do
-    column = Tableficate::Column.new(nil, :first_name, class: 'attrs')
-    column.attrs.should == {class: 'attrs'}
-
-    column = Tableficate::Column.new(nil, :first_name)
-    column.attrs.should == {}
-  end
-
-  it 'should accept :header_attrs as an option' do
-    column = Tableficate::Column.new(nil, :first_name, header_attrs: {class: 'header'})
-    column.header_attrs.should == {class: 'header'}
-
-    column = Tableficate::Column.new(nil, :first_name)
-    column.header_attrs.should == {}
-  end
-
-  it 'should accept :cell_attrs as an option' do
-    column = Tableficate::Column.new(nil, :first_name, cell_attrs: {class: 'cell'})
-    column.cell_attrs.should == {class: 'cell'}
-  end
-
-  it 'should show the value from the database field if no alternative is provided' do
-    row = NobelPrizeWinner.find_by_first_name('Norman')
-    column = Tableficate::Column.new(nil, :first_name)
-
-    column.value(row).should == 'Norman'
-  end
-  it 'should return the value provided from the block' do
-    row = NobelPrizeWinner.find_by_first_name_and_last_name('Norman', 'Borlaug')
-    column = Tableficate::Column.new(nil, :full_name) do |row|
-      [row.first_name, row.last_name].join(' ')
+  describe '#header' do
+    context 'default' do
+      its(:header) { should == 'First Name' }
     end
 
-    column.value(row).should == 'Norman Borlaug'
+    context '#initialize where options has :header'  do
+      subject { described_class.new(@table, column_name, header: 'Given Name') }
+
+      its(:header) { should == 'Given Name'}
+    end
   end
-  it 'should not escape html in block outputs' do
-    row = NobelPrizeWinner.find_by_first_name_and_last_name('Norman', 'Borlaug')
-    column = Tableficate::Column.new(nil, :full_name) do |row|
-      [row.first_name, row.last_name].join('<br/>')
+
+  describe '#value(row)' do
+    let(:row) { NobelPrizeWinner.find_by_first_name_and_last_name('Norman', 'Borlaug') }
+
+    it 'calls a method on the object based on the name argument passed to #initialize' do
+      subject.value(row).should == 'Norman'
     end
 
-    ERB::Util::html_escape(column.value(row)).should == 'Norman<br/>Borlaug'
+    context '#initialize was passed a block' do
+      it 'returns the value from the block' do
+        column = described_class.new(@table, :full_name) do |r|
+          [r.first_name, r.last_name].join(' ')
+        end
+
+        column.value(row).should == 'Norman Borlaug'
+      end
+
+      it 'does not escape HTML in block output' do
+        column = described_class.new(@table, :full_name) do |r|
+          [r.first_name, r.last_name].join('<br/>')
+        end
+
+        ERB::Util::html_escape(column.value(row)).should == 'Norman<br/>Borlaug'
+      end
+
+      it 'should allow template tags in block output' do
+        column = described_class.new(@table, :first_name) do |r|
+          ERB.new('<%= r.first_name.upcase %>').result(binding)
+        end
+
+        column.value(row).should == 'NORMAN'
+      end
+    end
   end
-  it 'should allow ERB tags in block outputs' do
-    row = NobelPrizeWinner.find_by_first_name_and_last_name('Norman', 'Borlaug')
-    column = Tableficate::Column.new(nil, :first_name) do |row|
-      ERB.new("<%= row.first_name.upcase %>").result(binding)
+
+  describe '#show_sort?' do
+    context 'default' do
+      its(:show_sort?) { should be_false }
     end
 
-    column.value(row).should == 'NORMAN'
-  end
+    context '#initialize with options where :show_sort' do
+      context 'is true' do
+        subject { described_class.new(@table, column_name, show_sort: true) }
 
-  it 'should allow sorting to be turned on and off' do
-    column = Tableficate::Column.new(nil, :first_name, show_sort: false)
-    column.show_sort?.should be false
+        its(:show_sort?) { should be_true }
+      end
 
-    column = Tableficate::Column.new(nil, :first_name, show_sort: true)
-    column.show_sort?.should be true
+      context 'is false' do
+        subject { described_class.new(@table, column_name, show_sort: false) }
 
-    # defaults to false
-    column = Tableficate::Column.new(nil, :first_name)
-    column.show_sort?.should be false
-  end
-
-  it 'should indicate whether a column is sorted or not' do
-    class DefaultOrder < Tableficate::Base
-      scope(:nobel_prize_winner)
-
-      default_sort(:first_name)
+        its(:show_sort?) { should be_false }
+      end
     end
-    table = Tableficate::Table.new(nil, DefaultOrder.tableficate({}), {}, {})
+  end
 
-    column = Tableficate::Column.new(table, :first_name)
-    column.is_sorted?('asc').should be true
+  describe '#is_sorted?(dir = nil)' do
+    context 'when the column is being sorted on and dir' do
+      context 'is "asc"' do
+        it 'returns true' do
+          subject.is_sorted?('asc').should be_true
+        end
+      end
 
-    column = Tableficate::Column.new(table, :first_name)
-    column.is_sorted?('desc').should be false
+      context 'is "desc"' do
+        it 'returns false' do
+          subject.is_sorted?('desc').should be_false
+        end
+      end
 
-    column = Tableficate::Column.new(table, :first_name)
-    column.is_sorted?.should be true
+      context 'is not provided' do
+        its(:is_sorted?) { should be_true }
+      end
+    end
 
-    column = Tableficate::Column.new(table, :last_name)
-    column.is_sorted?.should be false
+    context 'when the column is not being sorted on' do
+      subject { described_class.new(@table, :last_name) }
+
+      its(:is_sorted?) { should be_false }
+    end
   end
 end

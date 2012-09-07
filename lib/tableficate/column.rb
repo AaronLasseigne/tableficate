@@ -3,27 +3,19 @@ module Tableficate
     attr_reader :name, :header, :table, :header_attrs, :cell_attrs, :attrs
 
     def initialize(table, name, options = {}, &block)
-      @table = table
-      @name  = name
-      @block = block
+      @table, @name, @attrs, @block = table, name, options.dup, block
 
-      @header       = options.delete(:header) || name.to_s.titleize
-      @header_attrs = options.delete(:header_attrs) || {}
-      @cell_attrs   = options.delete(:cell_attrs) || {}
-      @show_sort    = options.delete(:show_sort) || false
-
-      @attrs = options
+      @header       = @attrs.delete(:header)       || name.to_s.titleize
+      @header_attrs = @attrs.delete(:header_attrs) || {}
+      @cell_attrs   = @attrs.delete(:cell_attrs)   || {}
+      @show_sort    = @attrs.delete(:show_sort)    || false
     end
 
     def value(row)
       if @block
         output = @block.call(row)
-        if output.is_a?(ActionView::OutputBuffer)
-          ''
-        else
-          output = output.html_safe if output.respond_to? :html_safe
-          output
-        end
+        # REVIEW: What is the is_a check for?
+        output.is_a?(ActionView::OutputBuffer) ? '' : output.try(:html_safe)
       else
         row.send(@name)
       end
@@ -34,10 +26,9 @@ module Tableficate
     end
 
     def is_sorted?(dir = nil)
-      is_sorted = @table.rows.current_order[:field] == self.name
-      is_sorted = @table.rows.current_order[:dir] == dir.to_sym if is_sorted and dir
+      current_order = @table.rows.current_order
 
-      is_sorted
+      current_order[:field] == name && (dir.nil? || current_order[:dir] == dir.to_sym)
     end
   end
 end
