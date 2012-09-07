@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Tableficate::Utils do
-  describe 'template_path' do
+  describe ".template_path(template, partial_name, theme = '')" do
     before(:each) do
       @template = mock('Template')
       @template.stub!(:lookup_context).and_return(ActionView::LookupContext.new([]))
