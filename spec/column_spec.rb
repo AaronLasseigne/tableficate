@@ -44,7 +44,7 @@ describe Tableficate::Column do
         ERB::Util::html_escape(column.value(row)).should == 'Norman<br/>Borlaug'
       end
 
-      it 'should allow template tags in block output' do
+      it 'allows template tags in block output' do
         column = described_class.new(@table, :first_name) do |r|
           ERB.new('<%= r.first_name.upcase %>').result(binding)
         end
