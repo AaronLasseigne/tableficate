@@ -3,20 +3,16 @@ module Tableficate
     def initialize(table, *args)
       @table   = table
       @content = block_given? ? Proc.new : args.shift
-      @attrs   = args.first || {}
+      @attrs   = args.first.try(:dup) || {}
     end
 
     def value
-      if @content.is_a?(String)
-        @content
-      else
+      if @content.is_a?(Proc)
         output = @content.call
-        if output.is_a?(ActionView::OutputBuffer)
-          ''
-        else
-          output = output.html_safe if output.respond_to? :html_safe
-          output
-        end
+        # REVIEW: What is the is_a check for?
+        output.is_a?(ActionView::OutputBuffer) ? '' : output.try(:html_safe)
+      else
+        @content
       end
     end
 

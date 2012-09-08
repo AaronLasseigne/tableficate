@@ -2,44 +2,51 @@ require 'spec_helper'
 
 describe Tableficate::Empty do
   before(:each) do
-    @table = Tableficate::Table.new(nil, NobelPrizeWinner.limit(1), {}, {})
+    @table = double('Table')
   end
 
-  it 'should add a `colspan` attribute' do
-    @table.column(:first_name)
-    @table.column(:last_name)
-    empty = Tableficate::Empty.new(@table, 'Foo')
+  describe '#attrs' do
+    it 'adds a :colspan based on the number of columns' do
+      empty = described_class.new(@table, 'Foo')
 
-    empty.attrs[:colspan].should == 2
+      # Columns may be added after empty is initialized.
+      @table.stub_chain(:columns, :length).and_return(2)
+      
+      empty.attrs[:colspan].should == 2
+    end
   end
 
-  it 'should accept plain text in the arguments' do
-    empty = Tableficate::Empty.new(@table, 'Foo', {class: 'title'})
-
-    empty.attrs[:class].should == 'title'
-    empty.value.should == 'Foo'
-  end
-
-  it 'should take a block in place of the plain text argument' do
-    empty = Tableficate::Empty.new(@table, {class: 'title'}) do
-      'Foo'
+  describe '#value' do
+    context '#initialize is passed the contents as a String' do
+      it 'should accept plain text in the arguments' do
+        described_class.new(@table, 'Foo').value.should == 'Foo'
+      end
     end
 
-    empty.attrs[:class].should == 'title'
-    empty.value.should == 'Foo'
-  end
-  it 'should not escape html in block outputs' do
-    empty = Tableficate::Empty.new(@table) do
-      '<b>Foo</b>'
-    end
+    context '#initialize is passed the contents as a block' do
+      it 'returns the value from the block' do
+        caption = described_class.new(@table) do
+          'Foo'
+        end
 
-    ERB::Util::html_escape(empty.value).should == '<b>Foo</b>'
-  end
-  it 'should allow ERB tags in block outputs' do
-    empty = Tableficate::Empty.new(@table) do
-      ERB.new("<%= 'Foo'.upcase %>").result(binding)
-    end
+        caption.value.should == 'Foo'
+      end
 
-    empty.value.should == 'FOO'
+      it 'does not escape HTML in block output' do
+        caption = described_class.new(@table) do
+          '<b>Foo</b>'
+        end
+
+        ERB::Util::html_escape(caption.value).should == '<b>Foo</b>'
+      end
+
+      it 'allows template tags in block output' do
+        caption = described_class.new(@table) do
+          ERB.new("<%= 'Foo'.upcase %>").result(binding)
+        end
+
+        caption.value.should == 'FOO'
+      end
+    end
   end
 end
