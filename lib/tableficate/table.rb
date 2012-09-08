@@ -1,36 +1,37 @@
 module Tableficate
   class Table
+    FILTER_TYPE    = 0
+    FILTER_NAME    = 1
+    FILTER_OPTIONS = 2
+
     attr_reader :columns, :rows, :attrs, :param_namespace, :template, :theme
 
     def initialize(template, rows, options, data)
-      @template = template
-      @rows     = rows
+      @template, @rows, @attrs = template, rows, options.dup
 
-      @theme      = options.delete(:theme) || ''
-      @show_sorts = options.delete(:show_sorts) || false
-      @attrs      = options
+      @theme      = @attrs.delete(:theme) || ''
+      @show_sorts = @attrs.delete(:show_sorts) || false
 
       @param_namespace = data[:param_namespace]
       @field_map       = data[:field_map] || {}
 
-      @columns = []
-      @filters = []
+      @columns = @filters = []
     end
 
     def filters
-      @filters.reject{|filter| filter[2].try(:[], :as) == :hidden || filter[2].try(:[], :type) == 'hidden'}
+      @filters.reject { |filter| hidden_filter?(filter) }
     end
 
     def hidden_filters
       @filters.
-        select{|filter| filter[2].try(:[], :as) == :hidden || filter[2].try(:[], :type) == 'hidden'}.
-        map{|filter| filter[1, filter.size - 1]}
+        select { |filter| hidden_filter?(filter) }.
+        map { |filter| filter[FILTER_NAME, 2] }
     end
 
     def empty(*args)
       if block_given?
         @empty = Empty.new(self, *args, Proc.new)
-      elsif args.present?
+      elsif args.length > 0
         @empty = Empty.new(self, *args)
       else
         @empty
@@ -40,7 +41,7 @@ module Tableficate
     def caption(*args)
       if block_given?
         @caption = Caption.new(*args, Proc.new)
-      elsif args.present?
+      elsif args.length > 0
         @caption = Caption.new(*args)
       else
         @caption
@@ -48,7 +49,7 @@ module Tableficate
     end
 
     def column(name, options = {}, &block)
-      @columns.push(Column.new(self, name, options.reverse_merge(show_sort: @show_sorts), &block))
+      @columns.push(Column.new(self, name, {show_sort: @show_sorts}.merge(options), &block))
     end
 
     def actions(options = {}, &block)
@@ -56,7 +57,7 @@ module Tableficate
     end
 
     def show_sort?
-      self.columns.any?{|column| column.show_sort?}
+      self.columns.any?(&:show_sort?)
     end
 
     def filter(name, options = {})
@@ -65,6 +66,12 @@ module Tableficate
 
     def filter_range(name, options = {})
       @filters.push([:input_range, name, options])
+    end
+
+    private
+
+    def hidden_filter?(filter)
+      filter[FILTER_OPTIONS][:as].to_s == 'hidden'
     end
   end
 end

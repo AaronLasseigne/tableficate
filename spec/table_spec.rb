@@ -1,135 +1,124 @@
 require 'spec_helper'
 
+shared_examples 'a getter and setter returning an object' do |method, klass|
+  context 'has args' do
+    it 'acts as a setter' do
+      subject.send(method, 'Foo')
+
+      subject.send(method).should be_instance_of(klass)
+    end
+  end
+
+  context 'has a block' do
+    it 'acts as a setter' do
+      subject.send(method, Proc.new { 'Foo' })
+
+      subject.send(method).should be_instance_of(klass)
+    end
+  end
+
+  context 'has no args and no block' do
+    it 'acts as a getter' do
+      subject.send(method, 'Foo')
+
+      subject.send(method).should be_instance_of(klass)
+    end
+  end
+end
+
 describe Tableficate::Table do
-  before(:each) do
-    @template = mock('Template')
-    @template.stub!(:lookup_context).and_return(ActionView::LookupContext.new([]))
-    @template.lookup_context.stub!(:exists?).and_return(true)
-    @npw = NobelPrizeWinner.joins(:nobel_prizes).limit(1)
-    @table = Tableficate::Table.new(@template, @npw, {}, {})
-  end
+  let(:template) { nil }
+  let(:rows)     { nil }
+  subject { described_class.new(template, rows, {}, {}) }
 
-  context ':param_namespace in the tableficate_data hash' do
-    it 'is provided then use provided string' do
-      table = Tableficate::Table.new(@template, @npw, {}, {param_namespace: 'foo'})
-      table.param_namespace.should == 'foo'
+  describe '#filters' do
+    it 'returns all filters not of the :type "hidden"' do
+      subject.filter(:hidden, as: :hidden, value: 1)
+      subject.filter(:visible)
+
+      subject.filters.should have(1).filter
+      subject.filters.first[1].should == :visible
     end
   end
 
-  it 'should add a empty' do
-    @table.empty('There is no data.')
-    @table.empty.is_a?(Tableficate::Empty).should be true
-    @table.empty.value.should == 'There is no data.'
+  describe '#hidden_filters' do
+    it 'returns all filters of the :type "hidden"' do
+      subject.filter(:hidden, as: :hidden, value: 1)
+      subject.filter(:visible)
 
-    @table.empty do
-      'No data.'
+      subject.hidden_filters.should have(1).filter
+      subject.hidden_filters.first[0].should == :hidden
     end
-    @table.empty.value.should == 'No data.'
   end
 
-  it 'should add a caption' do
-    @table.caption('Nobel Prize Winners')
-    @table.caption.is_a?(Tableficate::Caption).should be true
-    @table.caption.value.should == 'Nobel Prize Winners'
-
-    @table.caption do
-      'Nobel Winners'
-    end
-    @table.caption.value.should == 'Nobel Winners'
+  describe '#empty(*args)' do
+    it_behaves_like 'a getter and setter returning an object', :empty, Tableficate::Empty
   end
 
-  it 'should add a Column' do
-    @table.column(:first_name)
-    @table.column(:last_name)
-
-    @table.columns.first.name.should == :first_name
-    @table.columns.first.is_a?(Tableficate::Column).should be true
-    @table.columns.last.name.should == :last_name
+  describe '#caption(*args)' do
+    it_behaves_like 'a getter and setter returning an object', :caption, Tableficate::Caption
   end
 
-  it 'should indicate that it is sortble if any column is sortable' do
-    @table.column(:first_name)
-    @table.show_sort?.should be false
+  describe '#column(name, options = {}, &block)' do
+    it 'adds a Column' do
+      subject.column(:first_name)
 
-    @table.column(:last_name, show_sort: true)
-    @table.show_sort?.should be true
-  end
-
-  it 'should overwrite the column sorting unless it is provided' do
-    @table.column(:first_name)
-    @table.column(:last_name, show_sort: true)
-
-    @table.columns.first.show_sort?.should be false
-    @table.columns.last.show_sort?.should be true
-
-    table = Tableficate::Table.new(nil, NobelPrizeWinner.limit(1), {show_sorts: true}, {})
-    table.column(:first_name)
-    table.column(:last_name, show_sort: false)
-
-    table.columns.first.show_sort?.should be true
-    table.columns.last.show_sort?.should be false
-  end
-
-  it 'should add an ActionColumn' do
-    @table.actions do
-      Action!
+      subject.columns.first.should be_instance_of(Tableficate::Column)
     end
 
-    @table.columns.first.is_a?(Tableficate::ActionColumn).should be true
+    context 'options' do
+      context 'has no :show_sort' do
+        it 'defaults to :show_sorts on the table' do
+          table = described_class.new(template, rows, {show_sorts: true}, {})
+          table.column(:first_name)
+
+          table.columns.first.show_sort?.should be_true
+        end
+      end
+    end
   end
 
-  it 'should determine whether any columns are sortable' do
-    @table.column(:first_name, show_sort: true)
+  describe '#actions(options = {}, &block)' do
+    it 'adds an ActionColumn' do
+      subject.actions do
+        'Action!'
+      end
 
-    @table.show_sort?.should be true
-
-    table = Tableficate::Table.new(nil, NobelPrizeWinner.limit(1), {show_sorts: true}, {})
-    table.column(:first_name, show_sort: false)
-
-    table.show_sort?.should be false
+      subject.columns.first.should be_instance_of(Tableficate::ActionColumn)
+    end
   end
 
-  it 'should add an Input filter' do
-    @table.filter(:first_name, label: 'First')
-    @table.filter(:last_name, label: 'Last')
+  describe '#show_sort?' do
+    before(:each) do
+      subject.column(:first_name)
+    end
 
-    @table.filters.first[1].should == :first_name
-    @table.filters.last[1].should == :last_name
+    context 'any column is sortable' do
+      it 'returns true' do
+        subject.column(:last_name, {show_sort: true})
+
+        subject.show_sort?.should be_true
+      end
+    end
+
+    context 'no column is sortable' do
+      its(:show_sort?) { should be_false }
+    end
   end
 
-  it 'should add a InputRange filter' do
-    @table.filter_range(:first_name, label: 'First')
-    @table.filter_range(:last_name, label: 'Last')
+  describe '#filter(name, options = {})' do
+    it 'adds an Input filter' do
+      subject.filter(:first_name)
 
-    @table.filters.first[1].should == :first_name
-    @table.filters.last[1].should == :last_name
+      subject.filters.first.should == [:input, :first_name, {}]
+    end
   end
 
-  it 'should add a Select filter' do
-    @table.filter(:first_name, collection: {}, label: 'First')
-    @table.filter(:last_name, collection: {}, label: 'Last')
+  describe '#filter_range(name, options = {})' do
+    it 'adds a InputRange filter' do
+      subject.filter_range(:first_name)
 
-    @table.filters.first[1].should == :first_name
-    @table.filters.last[1].should == :last_name
-  end
-
-  it 'should return hidden_filters' do
-    @table.hidden_filters.should == []
-
-    @table.filter(:hidden, as: :hidden, value: 1)
-    @table.filter(:visible)
-
-    @table.hidden_filters.length.should == 1
-    @table.hidden_filters.first[1][:as].should == :hidden
-  end
-
-  it 'should return visible_filters' do
-    @table.filters.should == []
-
-    @table.filter(:hidden, as: :hidden, value: 1)
-    @table.filter(:visible)
-
-    @table.filters.length.should == 1
-    @table.filters.first[1].should == :visible
+      subject.filters.first.should == [:input_range, :first_name, {}]
+    end
   end
 end
