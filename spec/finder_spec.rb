@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Tableficate::Finder do
-  context '#tableficate(params, options = {})' do
+  describe '#tableficate(params, options = {})' do
     context 'single value filtered' do
       it 'works where the match is :exact' do
         npw = NobelPrizeWinner.tableficate({'nobel_prize_winners' => {'filter' => {'first_name' => 'Albert'}}})
