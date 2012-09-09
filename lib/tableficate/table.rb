@@ -15,7 +15,8 @@ module Tableficate
       @param_namespace = data[:param_namespace]
       @field_map       = data[:field_map] || {}
 
-      @columns = @filters = []
+      @columns = []
+      @filters = []
     end
 
     def filters
