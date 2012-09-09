@@ -13,13 +13,13 @@ module Tableficate
     def self.column(name, options = {})
       @sort ||= {}
 
-      @sort[name] = options[:sort] if options[:sort].present?
+      @sort[name] = options[:sort] if options.key?(:sort) && options[:sort] != ''
     end
 
     def self.filter(name, options = {})
       @filter ||= {}
 
-      @filter[name] = block_given? ? Proc.new : options.reverse_merge(column: name)
+      @filter[name] = block_given? ? Proc.new : {column: name}.merge(options)
     end
   end
 end
