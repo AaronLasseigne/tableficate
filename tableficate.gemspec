@@ -27,4 +27,6 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'genspec'
   gem.add_development_dependency 'sqlite3'
   gem.add_development_dependency 'capybara'
+  gem.add_development_dependency 'guard'
+  gem.add_development_dependency 'guard-rspec'
 end
