@@ -26,9 +26,17 @@ module Tableficate
     end
 
     def is_sorted?(dir = nil)
-      current_order = @table.rows.current_order
+      column_is_being_sorted_on? && (dir.nil? || current_dir_is?(dir))
+    end
 
-      current_order[:field] == name && (dir.nil? || current_order[:dir] == dir.to_sym)
+    private
+
+    def column_is_being_sorted_on?
+      @table.rows.current_order[:field] == name
+    end
+
+    def current_dir_is?(dir)
+      @table.rows.current_order[:dir] == dir.to_sym
     end
   end
 end
