@@ -2,18 +2,23 @@ require 'spec_helper'
 
 describe Tableficate::Finder do
   describe '#tableficate(params, options = {})' do
+    it 'raises an error if the scope does not exist' do
+      class NoScope < Tableficate::Base; end
+      expect { NoScope.tableficate({}) }.to raise_error(Tableficate::MissingScope)
+    end
+
     context 'single value filtered' do
       it 'works where the match is :exact' do
         npw = NobelPrizeWinner.tableficate({'nobel_prize_winners' => {'filter' => {
           'first_name' => 'Albert'
         }}})
-        npw.should have(1).record
-        npw.first.first_name.should == 'Albert'
+        expect(npw).to have(1).record
+        expect(npw.first.first_name).to eq 'Albert'
 
         npw = NobelPrizeWinner.tableficate({'nobel_prize_winners' => {'filter' => {
           'first_name' => 'Al'
         }}})
-        npw.should have(0).records
+        expect(npw).to have(0).records
       end
 
       it 'works where the match is :contains' do
@@ -26,8 +31,8 @@ describe Tableficate::Finder do
           'first_name' => 'Al'
         }}})
 
-        npw.should have(1).record 
-        npw.first.first_name.should == 'Albert'
+        expect(npw).to have(1).record 
+        expect(npw.first.first_name).to eq 'Albert'
       end
     end
 
@@ -37,14 +42,14 @@ describe Tableficate::Finder do
           'first_name' => ['Albert', 'Marie']
         }}})
 
-        npw.should have(2).records
-        npw.first.first_name.should == 'Albert'
-        npw.last.first_name.should == 'Marie'
+        expect(npw).to have(2).records
+        expect(npw.first.first_name).to eq 'Albert'
+        expect(npw.last.first_name).to eq 'Marie'
 
         npw = NobelPrizeWinner.tableficate({'nobel_prize_winners' => {'filter' => {
           'first_name' => ['Al', 'Mar']
         }}})
-        npw.should have(0).records
+        expect(npw).to have(0).records
       end
 
       it 'works where the match is :contains' do
@@ -57,9 +62,9 @@ describe Tableficate::Finder do
           'first_name' => ['Al', 'Mar']
         }}})
 
-        npw.should have(2).records
-        npw.first.first_name.should == 'Albert'
-        npw.last.first_name.should == 'Marie'
+        expect(npw).to have(2).records
+        expect(npw.first.first_name).to eq 'Albert'
+        expect(npw.last.first_name).to eq 'Marie'
       end
     end
 
@@ -68,7 +73,7 @@ describe Tableficate::Finder do
         'year' => {'start' => 1900, 'stop' => 1930}
       }}})
 
-      np.should have(4).records
+      expect(np).to have(4).records
     end
 
     it 'handles a date string being used against a datetime or timestamp column' do
@@ -76,7 +81,7 @@ describe Tableficate::Finder do
         'created_at' => '20110101'
       }}})
 
-      npw.should have(1).record
+      expect(npw).to have(1).record
     end
 
     it 'handles a date range being used against a datetime or timestamp column' do
@@ -84,7 +89,7 @@ describe Tableficate::Finder do
         'created_at' => {'start' => '20110101', 'stop' => '20110105'}
       }}})
 
-      npw.should have(5).records
+      expect(npw).to have(5).records
     end
 
     it 'matchs an exact datetime and account for the timezone setting' do
@@ -92,7 +97,7 @@ describe Tableficate::Finder do
         'created_at' => '20110101050112'
       }}})
 
-      npw.should have(1).record
+      expect(npw).to have(1).record
     end
 
     it 'matchs an exact datetime range and account for the timezone setting' do
@@ -100,21 +105,22 @@ describe Tableficate::Finder do
         'created_at' => {'start' => '20110101050112', 'stop' => '20110102050212'}
       }}})
 
-      npw.should have(2).records
+      expect(npw).to have(2).records
     end
 
     context 'the :param_namespace option is provided' do
       it 'sets :param_namespace in the attached tableficate_data hash' do
         npw = NobelPrizeWinner.tableficate({}, {param_namespace: :foo})
 
-        npw.tableficate_data[:param_namespace].should == 'foo'
+        expect(npw.tableficate_data[:param_namespace]).to eq 'foo'
       end
     end
+
     context 'the :param_namespace option is not provided' do
       it 'defauls to the primary table name' do
         npw = NobelPrizeWinner.tableficate({})
 
-        npw.tableficate_data[:param_namespace].should == 'nobel_prize_winners'
+        expect(npw.tableficate_data[:param_namespace]).to eq 'nobel_prize_winners'
       end
     end
   end

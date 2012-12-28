@@ -2,14 +2,16 @@ require 'spec_helper'
 
 describe 'Theme', type: :feature do
   describe 'Caption' do
-    it 'should display a caption if one is specified' do
+    it 'displays a caption if one is specified' do
       visit '/themes/caption'
-      page.should have_xpath('//caption[text()="Nobel Prize Winners"]')
+
+      expect(page).to have_xpath('//caption[text()="Nobel Prize Winners"]')
     end
 
-    it 'should display no caption if no caption is specified' do
+    it 'displays no caption if no caption is specified' do
       visit '/themes/no_caption'
-      page.should have_no_xpath('//caption')
+
+      expect(page).to have_no_xpath('//caption')
     end
   end
 end

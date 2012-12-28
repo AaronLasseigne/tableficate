@@ -1,51 +1,71 @@
 require 'spec_helper'
 
 describe Tableficate::Empty do
+  let(:content) { 'Foo' }
   before(:each) do
     @table = double('Table')
   end
+  subject(:empty) { described_class.new(@table, content) }
 
   describe '#attrs' do
-    it 'adds a :colspan based on the number of columns' do
-      empty = described_class.new(@table, 'Foo')
-
-      # Columns may be added after empty is initialized.
+    let(:colspan_hash) { {colspan: 2} }
+    before(:each) do
       @table.stub_chain(:columns, :length).and_return(2)
-      
-      empty.attrs[:colspan].should == 2
+    end
+
+    context 'default' do
+      its(:attrs) { should eq(colspan_hash) }
+
+      it 'adjusts :colspan for coluns added after empty is initialized' do
+        @table.stub_chain(:columns, :length).and_return(3)
+
+        expect(empty.attrs[:colspan]).to eq 3
+      end
+    end
+
+    context "#initialize where attrs are passed" do
+      it 'returns the atts with :colspan added' do
+        attrs = {style: 'width: 200px'}
+        empty = described_class.new(@table, content, attrs)
+
+        expect(empty.attrs).to eq(attrs.merge(colspan_hash))
+      end
     end
   end
 
   describe '#value' do
-    context '#initialize is passed the contents as a String' do
-      it 'should accept plain text in the arguments' do
-        described_class.new(@table, 'Foo').value.should == 'Foo'
-      end
-    end
-
-    context '#initialize is passed the contents as a block' do
-      it 'returns the value from the block' do
-        caption = described_class.new(@table) do
-          'Foo'
+    context '#initialize is passed the contents' do
+      context 'as a String' do
+        it 'returns the content' do
+          expect(described_class.new(@table, content).value).to eq content
         end
-
-        caption.value.should == 'Foo'
       end
 
-      it 'does not escape HTML in block output' do
-        caption = described_class.new(@table) do
-          '<b>Foo</b>'
+      context 'as a block' do
+        it 'returns the content from the block' do
+          caption = described_class.new(@table) do
+            content
+          end
+
+          expect(caption.value).to eq content
         end
 
-        ERB::Util::html_escape(caption.value).should == '<b>Foo</b>'
-      end
+        it 'does not escape HTML in block output' do
+          bold_content = "<b>#{content}</b>"
+          caption = described_class.new(@table) do
+            bold_content
+          end
 
-      it 'allows template tags in block output' do
-        caption = described_class.new(@table) do
-          ERB.new("<%= 'Foo'.upcase %>").result(binding)
+          expect(ERB::Util::html_escape(caption.value)).to eq bold_content
         end
 
-        caption.value.should == 'FOO'
+        it 'allows template tags in block output' do
+          caption = described_class.new(@table) do
+            ERB.new("<%= content.upcase %>").result(binding)
+          end
+
+          expect(caption.value).to eq content.upcase
+        end
       end
     end
   end

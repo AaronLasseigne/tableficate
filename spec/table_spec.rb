@@ -5,7 +5,7 @@ shared_examples 'a getter and setter returning an object' do |method, klass|
     it 'acts as a setter' do
       subject.send(method, 'Foo')
 
-      subject.send(method).should be_instance_of(klass)
+      expect(subject.send(method)).to be_instance_of(klass)
     end
   end
 
@@ -13,7 +13,7 @@ shared_examples 'a getter and setter returning an object' do |method, klass|
     it 'acts as a setter' do
       subject.send(method, Proc.new { 'Foo' })
 
-      subject.send(method).should be_instance_of(klass)
+      expect(subject.send(method)).to be_instance_of(klass)
     end
   end
 
@@ -21,7 +21,7 @@ shared_examples 'a getter and setter returning an object' do |method, klass|
     it 'acts as a getter' do
       subject.send(method, 'Foo')
 
-      subject.send(method).should be_instance_of(klass)
+      expect(subject.send(method)).to be_instance_of(klass)
     end
   end
 end
@@ -29,25 +29,63 @@ end
 describe Tableficate::Table do
   let(:template) { nil }
   let(:rows)     { nil }
-  subject { described_class.new(template, rows, {}, {}) }
+  let(:options)  { {} }
+  let(:data)     { {} }
+  subject(:table) { described_class.new(template, rows, options, {}) }
+
+  describe '#columns' do
+    its(:columns) { should eq [] }
+  end
+
+  describe '#rows' do
+    its(:rows) { should eq rows }
+  end
+
+  describe '#attrs' do
+    its(:attrs) { should eq(options) }
+
+    it 'needs more tests'
+  end
+
+  describe '#param_namespace' do
+    its(:param_namespace) { should eq data[:param_namespace] }
+  end
+
+  describe '#template' do
+    its(:template) { should eq template }
+  end
+
+  describe '#theme' do
+    context 'defualt' do
+      its(:theme) { should eq '' }
+    end
+
+    context '#initialize where options has :theme' do
+      subject { described_class.new(template, rows, {theme: 'green'}, data) }
+
+      its(:theme) { should eq 'green' }
+    end
+  end
 
   describe '#filters' do
     it 'returns all filters not of the :type "hidden"' do
-      subject.filter(:hidden, as: :hidden, value: 1)
-      subject.filter(:visible)
+      filter_type_index = 1
+      table.filter(:hidden, as: :hidden, value: 1)
+      table.filter(:visible)
 
-      subject.filters.should have(1).filter
-      subject.filters.first[1].should == :visible
+      expect(table.filters).to have(1).filter
+      expect(table.filters.first[filter_type_index]).to eq :visible
     end
   end
 
   describe '#hidden_filters' do
     it 'returns all filters of the :type "hidden"' do
-      subject.filter(:hidden, as: :hidden, value: 1)
-      subject.filter(:visible)
+      filter_type_index = 0
+      table.filter(:hidden, as: :hidden, value: 1)
+      table.filter(:visible)
 
-      subject.hidden_filters.should have(1).filter
-      subject.hidden_filters.first[0].should == :hidden
+      expect(table.hidden_filters).to have(1).filter
+      expect(table.hidden_filters.first[filter_type_index]).to eq :hidden
     end
   end
 
@@ -61,18 +99,32 @@ describe Tableficate::Table do
 
   describe '#column(name, options = {}, &block)' do
     it 'adds a Column' do
-      subject.column(:first_name)
+      table.column(:first_name)
 
-      subject.columns.first.should be_instance_of(Tableficate::Column)
+      expect(table.columns.first).to be_instance_of(Tableficate::Column)
+    end
+
+    it 'defaults the sorting to false' do
+      table.column(:first_name)
+
+      expect(table.columns.first.show_sort?).to be_false
     end
 
     context 'options' do
+      context 'has :show_sort' do
+        it 'uses the provided value' do
+          table.column(:first_name, show_sort: true)
+
+          expect(table.columns.first.show_sort?).to be_true
+        end
+      end
+
       context 'has no :show_sort' do
         it 'defaults to :show_sorts on the table' do
           table = described_class.new(template, rows, {show_sorts: true}, {})
           table.column(:first_name)
 
-          table.columns.first.show_sort?.should be_true
+          expect(table.columns.first.show_sort?).to be_true
         end
       end
     end
@@ -80,24 +132,20 @@ describe Tableficate::Table do
 
   describe '#actions(options = {}, &block)' do
     it 'adds an ActionColumn' do
-      subject.actions do
+      table.actions do
         'Action!'
       end
 
-      subject.columns.first.should be_instance_of(Tableficate::ActionColumn)
+      expect(table.columns.first).to be_instance_of(Tableficate::ActionColumn)
     end
   end
 
   describe '#show_sort?' do
-    before(:each) do
-      subject.column(:first_name)
-    end
-
     context 'any column is sortable' do
       it 'returns true' do
-        subject.column(:last_name, {show_sort: true})
+        table.column(:last_name, {show_sort: true})
 
-        subject.show_sort?.should be_true
+        expect(table.show_sort?).to be_true
       end
     end
 
@@ -108,17 +156,17 @@ describe Tableficate::Table do
 
   describe '#filter(name, options = {})' do
     it 'adds an Input filter' do
-      subject.filter(:first_name)
+      table.filter(:first_name)
 
-      subject.filters.first.should == [:input, :first_name, {}]
+      expect(table.filters.first).to eq [:input, :first_name, {}]
     end
   end
 
   describe '#filter_range(name, options = {})' do
     it 'adds a InputRange filter' do
-      subject.filter_range(:first_name)
+      table.filter_range(:first_name)
 
-      subject.filters.first.should == [:input_range, :first_name, {}]
+      expect(table.filters.first).to eq [:input_range, :first_name, {}]
     end
   end
 end

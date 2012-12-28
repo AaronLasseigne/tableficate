@@ -2,35 +2,40 @@ require 'spec_helper'
 
 describe Tableficate::Caption do
   describe '#value' do
-    context '#initialize is passed the contents as a String' do
-      it 'should accept plain text in the arguments' do
-        described_class.new('Foo').value.should == 'Foo'
-      end
-    end
+    let(:content) { 'Foo' }
 
-    context '#initialize is passed the contents as a block' do
-      it 'returns the value from the block' do
-        caption = described_class.new do
-          'Foo'
+    context '#initialize is passed the contents' do
+      context 'as a String' do
+        it 'returns the content' do
+          expect(described_class.new(content).value).to eq content
         end
-
-        caption.value.should == 'Foo'
       end
 
-      it 'does not escape HTML in block output' do
-        caption = described_class.new do
-          '<b>Foo</b>'
+      context 'as a block' do
+        it 'returns the content from the block' do
+          caption = described_class.new do
+            content
+          end
+
+          expect(caption.value).to eq content
         end
 
-        ERB::Util::html_escape(caption.value).should == '<b>Foo</b>'
-      end
+        it 'does not escape HTML in block output' do
+          bold_content = "<b>#{content}</b>"
+          caption = described_class.new do
+            bold_content
+          end
 
-      it 'allows template tags in block output' do
-        caption = described_class.new do
-          ERB.new("<%= 'Foo'.upcase %>").result(binding)
+          expect(ERB::Util::html_escape(caption.value)).to eq bold_content
         end
 
-        caption.value.should == 'FOO'
+        it 'allows template tags in block output' do
+          caption = described_class.new do
+            ERB.new("<%= content.upcase %>").result(binding)
+          end
+
+          expect(caption.value).to eq content.upcase
+        end
       end
     end
   end

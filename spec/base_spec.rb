@@ -2,19 +2,13 @@ require 'spec_helper'
 
 describe Tableficate::Base do
   describe '.scope(model = nil)' do
-    # FIXME: Move this into the finder spec. That's where the error is thrown
-    it 'raises an error if the model does not exist' do
-      class NoScope < Tableficate::Base; end
-      expect { NoScope.tableficate({}) }.to raise_error(Tableficate::MissingScope)
-    end
-
     context 'model name given' do
       it 'finds the model' do
         class SymbolScope < Tableficate::Base
           scope :nobel_prize_winner
         end
 
-        SymbolScope.send(:instance_variable_get, '@scope').should == NobelPrizeWinner
+        expect(SymbolScope.send(:instance_variable_get, '@scope')).to eq NobelPrizeWinner
       end
 
       # REVIEW: Should this throw a MissingScope error?
@@ -35,7 +29,7 @@ describe Tableficate::Base do
           end
         end
 
-        BlockScope.send(:instance_variable_get, '@scope').should == NobelPrizeWinner.joins(:nobel_prizes)
+        expect(BlockScope.send(:instance_variable_get, '@scope')).to eq NobelPrizeWinner.joins(:nobel_prizes)
       end
     end
   end
@@ -52,7 +46,7 @@ describe Tableficate::Base do
             end
             npw = DefaultOrder.tableficate({})
 
-            npw.order_values.first.should == %Q(#{npw.table_name}."first_name" ASC)
+            expect(npw.order_values.first).to eq %Q(#{npw.table_name}."first_name" ASC)
           end
 
           it 'is "desc"' do
@@ -63,8 +57,8 @@ describe Tableficate::Base do
             end
             npw = DefaultOrderDesc.tableficate({})
 
-            npw.order_values.first.should == %Q(#{npw.table_name}."first_name" ASC)
-            npw.reverse_order.should be_true
+            expect(npw.order_values.first).to eq %Q(#{npw.table_name}."first_name" ASC)
+            expect(npw.reverse_order).to be_true
           end
         end
       end
@@ -80,7 +74,7 @@ describe Tableficate::Base do
           end
           npw = DefaultOrderWithOverride.tableficate({})
 
-          npw.order_values.first.should == 'first_name ASC, last_name ASC'
+          expect(npw.order_values.first).to eq 'first_name ASC, last_name ASC'
         end
       end
     end
@@ -94,7 +88,7 @@ describe Tableficate::Base do
         column(:full_name, sort: 'first_name ASC, last_name ASC')
       end
 
-      ColumnOrder.send(:instance_variable_get, '@sort')[:full_name].should == 'first_name ASC, last_name ASC'
+      expect(ColumnOrder.send(:instance_variable_get, '@sort')[:full_name]).to eq 'first_name ASC, last_name ASC'
     end
   end
 
@@ -110,8 +104,8 @@ describe Tableficate::Base do
             end
             npw = FilterByContainsInput.tableficate({'nobel_prize_winners' => {'filter' => {'first_name' => 'Al'}}})
 
-            npw.should have(1).record
-            npw.first.first_name.should == 'Albert'
+            expect(npw).to have(1).record
+            expect(npw.first.first_name).to eq 'Albert'
           end
 
           it 'filters multiple inputs' do
@@ -122,9 +116,9 @@ describe Tableficate::Base do
             end
             npw = FilterByContainsInput.tableficate({'nobel_prize_winners' => {'filter' => {'first_name' => ['Al', 'Mar']}}})
 
-            npw.should have(2).records
-            npw.first.first_name.should == 'Albert'
-            npw.last.first_name.should == 'Marie'
+            expect(npw).to have(2).records
+            expect(npw.first.first_name).to eq 'Albert'
+            expect(npw.last.first_name).to eq 'Marie'
           end
         end
       end
@@ -146,8 +140,8 @@ describe Tableficate::Base do
       end
       npw = BlockFilter.tableficate({'nobel_prize_winners' => {'filter' => {'full_name' => 'Bohr'}}})
 
-      npw.should have(1).record
-      npw.first.first_name.should == 'Niels'
+      expect(npw).to have(1).record
+      expect(npw.first.first_name).to eq 'Niels'
     end
   end
 end
