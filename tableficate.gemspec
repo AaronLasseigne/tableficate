@@ -1,21 +1,21 @@
 # -*- encoding: utf-8 -*-
-require File.expand_path('../lib/tableficate/version', __FILE__)
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'tableficate/version'
 
 Gem::Specification.new do |gem|
   gem.name        = 'tableficate'
   gem.version     = Tableficate::VERSION
+  gem.summary     = 'A DSL for Rails that provides easy table creation with sorting and filtering.'
+  gem.description = gem.summary
+  gem.homepage    = 'https://github.com/AaronLasseigne/tableficate'
 
   gem.authors     = ['Aaron Lasseigne']
   gem.email       = ['aaron.lasseigne@gmail.com']
-  gem.summary     = %q{A DSL for Rails that provides easy table creation with sorting and filtering.}
-  gem.description = %q{A DSL for Rails that provides easy table creation with sorting and filtering.}
-  gem.homepage    = 'https://github.com/AaronLasseigne/tableficate'
 
-  gem.rubyforge_project = 'tableficate'
-
-  gem.files         = `git ls-files`.split("\n")
-  gem.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
-  gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+  gem.files         = `git ls-files`.split($/)
+  gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
+  gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ['lib']
 
   gem.add_dependency 'rails',        '>= 3.1'
