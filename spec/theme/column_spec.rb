@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'Theme', type: :request do
+describe 'Theme', type: :feature do
   describe 'Column' do
     before(:all) do
       @npw = NobelPrizeWinner.select('nobel_prize_winners.*, nobel_prizes.category, nobel_prizes.year').joins(:nobel_prizes)

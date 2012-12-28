@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'Theme', type: :request do
+describe 'Theme', type: :feature do
   describe 'Caption' do
     it 'should display a caption if one is specified' do
       visit '/themes/caption'
