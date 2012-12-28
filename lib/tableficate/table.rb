@@ -9,7 +9,7 @@ module Tableficate
     def initialize(template, rows, options, data)
       @template, @rows, @attrs = template, rows, options.dup
 
-      @theme      = @attrs.delete(:theme) || ''
+      @theme      = @attrs.delete(:theme)      || ''
       @show_sorts = @attrs.delete(:show_sorts) || false
 
       @param_namespace = data[:param_namespace]
@@ -50,15 +50,19 @@ module Tableficate
     end
 
     def column(name, options = {}, &block)
-      @columns.push(Column.new(self, name, {show_sort: @show_sorts}.merge(options), &block))
+      @columns.push(
+        Column.new(self, name, {show_sort: @show_sorts}.merge(options), &block)
+      )
     end
 
     def actions(options = {}, &block)
-      @columns.push(ActionColumn.new(self, options, &block))
+      @columns.push(
+        ActionColumn.new(self, options, &block)
+      )
     end
 
     def show_sort?
-      self.columns.any?(&:show_sort?)
+      columns.any?(&:show_sort?)
     end
 
     def filter(name, options = {})

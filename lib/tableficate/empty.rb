@@ -6,6 +6,11 @@ module Tableficate
       @attrs   = args.first.try(:dup) || {}
     end
 
+    def attrs
+      @attrs[:colspan] = @table.columns.length
+      @attrs
+    end
+
     def value
       if @content.is_a?(Proc)
         output = @content.call
@@ -14,11 +19,6 @@ module Tableficate
       else
         @content
       end
-    end
-
-    def attrs
-      @attrs[:colspan] = @table.columns.length
-      @attrs
     end
   end
 end
