@@ -3,5 +3,5 @@
 Gemfile.lock
 pkg/*
 *.swp
-.rbenv-version
+.ruby-version
 tmp/*
