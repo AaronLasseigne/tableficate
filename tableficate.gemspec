@@ -6,6 +6,7 @@ require 'tableficate/version'
 Gem::Specification.new do |gem|
   gem.name        = 'tableficate'
   gem.version     = Tableficate::VERSION
+  gem.license     = 'MIT'
   gem.summary     = 'A DSL for Rails that provides easy table creation with sorting and filtering.'
   gem.description = gem.summary
   gem.homepage    = 'https://github.com/AaronLasseigne/tableficate'
