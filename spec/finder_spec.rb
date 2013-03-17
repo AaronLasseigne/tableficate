@@ -92,7 +92,7 @@ describe Tableficate::Finder do
       expect(npw).to have(5).records
     end
 
-    it 'matchs an exact datetime and account for the timezone setting' do
+    it 'matches an exact datetime and account for the timezone setting' do
       npw = NobelPrizeWinner.tableficate({'nobel_prize_winners' => {'filter' => {
         'created_at' => '20110101050112'
       }}})
@@ -100,7 +100,7 @@ describe Tableficate::Finder do
       expect(npw).to have(1).record
     end
 
-    it 'matchs an exact datetime range and account for the timezone setting' do
+    it 'matches an exact datetime range and account for the timezone setting' do
       npw = NobelPrizeWinner.tableficate({'nobel_prize_winners' => {'filter' => {
         'created_at' => {'start' => '20110101050112', 'stop' => '20110102050212'}
       }}})
