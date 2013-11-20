@@ -56,7 +56,7 @@ describe Tableficate::Table do
   end
 
   describe '#theme' do
-    context 'defualt' do
+    context 'default' do
       its(:theme) { should eq '' }
     end
 
@@ -64,28 +64,6 @@ describe Tableficate::Table do
       subject { described_class.new(template, rows, {theme: 'green'}, data) }
 
       its(:theme) { should eq 'green' }
-    end
-  end
-
-  describe '#filters' do
-    it 'returns all filters not of the :type "hidden"' do
-      filter_type_index = 1
-      table.filter(:hidden, as: :hidden, value: 1)
-      table.filter(:visible)
-
-      expect(table.filters).to have(1).filter
-      expect(table.filters.first[filter_type_index]).to eq :visible
-    end
-  end
-
-  describe '#hidden_filters' do
-    it 'returns all filters of the :type "hidden"' do
-      filter_type_index = 0
-      table.filter(:hidden, as: :hidden, value: 1)
-      table.filter(:visible)
-
-      expect(table.hidden_filters).to have(1).filter
-      expect(table.hidden_filters.first[filter_type_index]).to eq :hidden
     end
   end
 
@@ -103,31 +81,6 @@ describe Tableficate::Table do
 
       expect(table.columns.first).to be_instance_of(Tableficate::Column)
     end
-
-    it 'defaults the sorting to false' do
-      table.column(:first_name)
-
-      expect(table.columns.first.show_sort?).to be_false
-    end
-
-    context 'options' do
-      context 'has :show_sort' do
-        it 'uses the provided value' do
-          table.column(:first_name, show_sort: true)
-
-          expect(table.columns.first.show_sort?).to be_true
-        end
-      end
-
-      context 'has no :show_sort' do
-        it 'defaults to :show_sorts on the table' do
-          table = described_class.new(template, rows, {show_sorts: true}, {})
-          table.column(:first_name)
-
-          expect(table.columns.first.show_sort?).to be_true
-        end
-      end
-    end
   end
 
   describe '#actions(options = {}, &block)' do
@@ -137,36 +90,6 @@ describe Tableficate::Table do
       end
 
       expect(table.columns.first).to be_instance_of(Tableficate::ActionColumn)
-    end
-  end
-
-  describe '#show_sort?' do
-    context 'any column is sortable' do
-      it 'returns true' do
-        table.column(:last_name, {show_sort: true})
-
-        expect(table.show_sort?).to be_true
-      end
-    end
-
-    context 'no column is sortable' do
-      its(:show_sort?) { should be_false }
-    end
-  end
-
-  describe '#filter(name, options = {})' do
-    it 'adds an Input filter' do
-      table.filter(:first_name)
-
-      expect(table.filters.first).to eq [:input, :first_name, {}]
-    end
-  end
-
-  describe '#filter_range(name, options = {})' do
-    it 'adds a InputRange filter' do
-      table.filter_range(:first_name)
-
-      expect(table.filters.first).to eq [:input_range, :first_name, {}]
     end
   end
 end
