@@ -24,11 +24,5 @@ module Tableficate
       table = columns.first.table
       render partial: Tableficate::Utils::template_path(table.template, 'row', table.theme), locals: {row: row, columns: columns}
     end
-
-    def tableficate_filter_form_for(table)
-      if table.filters
-        render partial: Tableficate::Utils::template_path(table.template, 'filter_form_for', table.theme), locals: {table: table}
-      end
-    end
   end
 end

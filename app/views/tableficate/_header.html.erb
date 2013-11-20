@@ -1,7 +1,3 @@
 <%= content_tag(:th, column.header_attrs) do %>
   <%= column.header %>
-  <% if column.show_sort? %>
-    <%= link_with_order('A', column.table.rows, column.name, dir: :asc) %><% if column.is_sorted?('asc') %>*<% end %>
-    <%= link_with_order('D', column.table.rows, column.name, dir: :desc) %><% if column.is_sorted?('desc') %>*<% end %>
-  <% end %>
 <% end %>

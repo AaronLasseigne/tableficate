@@ -20,23 +20,5 @@ module Tableficate
         row.send(@name)
       end
     end
-
-    def show_sort?
-      @show_sort
-    end
-
-    def is_sorted?(dir = nil)
-      column_is_being_sorted_on? && (dir.nil? || current_dir_is?(dir))
-    end
-
-    private
-
-    def column_is_being_sorted_on?
-      @table.rows.current_order[:field] == name
-    end
-
-    def current_dir_is?(dir)
-      @table.rows.current_order[:dir] == dir.to_sym
-    end
   end
 end

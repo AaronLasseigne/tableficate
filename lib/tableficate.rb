@@ -1,5 +1,3 @@
-require 'with_order'
-require 'with_filters'
 require 'tableficate/engine'
 require 'tableficate/exceptions'
 require 'tableficate/utils'
