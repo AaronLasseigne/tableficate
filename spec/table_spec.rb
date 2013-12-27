@@ -82,14 +82,4 @@ describe Tableficate::Table do
       expect(table.columns.first).to be_instance_of(Tableficate::Column)
     end
   end
-
-  describe '#actions(options = {}, &block)' do
-    it 'adds an ActionColumn' do
-      table.actions do
-        'Action!'
-      end
-
-      expect(table.columns.first).to be_instance_of(Tableficate::ActionColumn)
-    end
-  end
 end

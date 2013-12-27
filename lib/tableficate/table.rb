@@ -36,11 +36,5 @@ module Tableficate
         Column.new(self, name, {show_sort: @show_sorts}.merge(options), &block)
       )
     end
-
-    def actions(options = {}, &block)
-      @columns.push(
-        ActionColumn.new(self, options, &block)
-      )
-    end
   end
 end
