@@ -1,23 +1,28 @@
 module Tableficate
   class Column
-    attr_reader :name, :header, :table, :header_attrs, :cell_attrs, :attrs
-
-    def initialize(table, name, options = {}, &block)
-      @table, @name, @attrs, @block = table, name, options.dup, block
+    def initialize(view_context, name, options = {}, &block)
+      @view_context, @name, @attrs, @block = view_context, name, options.dup, block
 
       @header       = @attrs.delete(:header)       || name.to_s.titleize
       @header_attrs = @attrs.delete(:header_attrs) || {}
       @cell_attrs   = @attrs.delete(:cell_attrs)   || {}
-      @show_sort    = @attrs.delete(:show_sort)    || false
     end
 
-    def value(row)
+    def render_header_cell
+      @view_context.content_tag(:th, @header, @header_attrs)
+    end
+
+    def render_row_cell(item)
+      @view_context.content_tag(:td, cell_text(item), @cell_attrs)
+    end
+
+    private
+
+    def cell_text(item)
       if @block
-        output = @block.call(row)
-        # REVIEW: What is the is_a check for?
-        output.is_a?(ActionView::OutputBuffer) ? '' : output.try(:html_safe)
+        @block.call(item)
       else
-        row.send(@name)
+        item.send(@name)
       end
     end
   end
