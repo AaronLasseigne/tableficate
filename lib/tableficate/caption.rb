@@ -1,14 +1,14 @@
 module Tableficate
   class Caption
-    def initialize(view_context, *args, &block)
+    def initialize(view_context, *args)
       @view_context = view_context
 
-      @content = block_given? ? block.call : args.shift
+      @message = block_given? ? Proc.new.call : args.shift
       @attrs   = args.first.try(:dup) || {}
     end
 
     def render
-      @view_context.content_tag(:caption, @content, @attrs)
+      @view_context.content_tag(:caption, @message, @attrs)
     end
   end
 end
