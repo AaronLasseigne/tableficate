@@ -1,5 +1,4 @@
 require 'tableficate/engine'
-require 'tableficate/utils'
 require 'tableficate/column'
 require 'tableficate/caption'
 require 'tableficate/empty'
