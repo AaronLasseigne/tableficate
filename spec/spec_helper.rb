@@ -1,3 +1,5 @@
+Dir['./spec/support/**/*.rb'].each { |f| require f }
+
 ENV['RAILS_ENV'] ||= 'test'
 
 require File.expand_path('../dummy/config/environment', __FILE__)

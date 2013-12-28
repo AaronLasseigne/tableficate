@@ -21,9 +21,8 @@ shared_examples_for 'a caption' do
 end
 
 describe Tableficate::Caption do
-  let(:view_context) do
-    Class.new { include ActionView::Helpers::TagHelper }.new
-  end
+  include_context 'view context'
+
   let(:text)    { SecureRandom.hex }
   let(:options) { {} }
   let(:output)  { caption.render }

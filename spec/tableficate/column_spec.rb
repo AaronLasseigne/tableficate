@@ -1,9 +1,8 @@
 require 'spec_helper'
 
 describe Tableficate::Column do
-  let(:view_context) do
-    Class.new { include ActionView::Helpers::TagHelper }.new
-  end
+  include_context 'view context'
+
   let(:name) { :created_at }
   let(:options) { {} }
   subject(:column) do
