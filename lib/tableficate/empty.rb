@@ -1,24 +1,18 @@
 module Tableficate
   class Empty
-    def initialize(table, *args)
-      @table   = table
-      @content = block_given? ? Proc.new : args.shift
+    def initialize(view_context, *args)
+      @view_context = view_context
+
+      @message = block_given? ? Proc.new.call : args.shift
       @attrs   = args.first.try(:dup) || {}
     end
 
-    def attrs
-      @attrs[:colspan] = @table.columns.length
-      @attrs
-    end
+    def render(colspan)
+      @attrs[:colspan] = colspan if colspan != 1
 
-    def value
-      if @content.is_a?(Proc)
-        output = @content.call
-        # REVIEW: What is the is_a check for?
-        output.is_a?(ActionView::OutputBuffer) ? '' : output.try(:html_safe)
-      else
-        @content
-      end
+      @view_context.content_tag(:tr,
+        @view_context.content_tag(:td, @message, @attrs)
+      )
     end
   end
 end
