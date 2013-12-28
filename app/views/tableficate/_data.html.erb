@@ -1,7 +1,0 @@
-<% attrs = column.cell_attrs.dup %>
-<% attrs.each do |key, value| %>
-  <% attrs[key] = value.call(row) if attrs[key].is_a?(Proc) %>
-<% end %>
-<%= content_tag(:td, attrs) do %>
-  <%= column.value(row) %>
-<% end %>

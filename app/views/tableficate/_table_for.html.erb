@@ -1,7 +1,0 @@
-<% if defined? ::Kaminari %>
-  <%= paginate(table.rows, param_name: "#{table.param_namespace}_page") %>
-<% elsif defined? ::WillPaginate %>
-  <%= will_paginate(table.rows, param_name: "#{table.param_namespace}_page") %>
-<% end %>
-
-<%= tableficate_table_tag(table) %>
