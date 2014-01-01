@@ -34,7 +34,7 @@ shared_examples_for 'an empty' do
   end
 end
 
-describe Tableficate::Empty,:focus do
+describe Tableficate::Empty do
   include_context 'view context'
 
   let(:text)    { SecureRandom.hex }

@@ -1,9 +1,7 @@
 module Tableficate
   module Helper
-    def table_for(rows, options = {})
-      t = Tableficate::Table.new(self, rows, options, rows.tableficate_data)
-      yield(t)
-      t.template.render(partial: Tableficate::Utils::template_path(t.template, 'table_for', t.theme), locals:  {table: t})
+    def table_for(elements, options = {}, &block)
+      Tableficate::Table.new(self, elements, options, &block).render
     end
   end
 end

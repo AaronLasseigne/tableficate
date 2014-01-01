@@ -1,40 +1,62 @@
 module Tableficate
   class Table
-    attr_reader :columns, :rows, :attrs, :param_namespace, :template, :theme
+    def initialize(view_context, elements, options = {}, &block)
+      @view_context = view_context
 
-    def initialize(template, rows, options, data)
-      @template, @rows, @attrs = template, rows, options.dup
-
-      @param_namespace = data[:param_namespace]
-      @field_map       = data[:field_map] || {}
+      @elements, @attrs = elements, options.dup
 
       @columns = []
+
+      block.call(self) if block_given?
     end
 
-    def empty(*args)
-      if block_given?
-        @empty = Empty.new(self, *args, Proc.new)
-      elsif args.length > 0
-        @empty = Empty.new(self, *args)
-      else
-        @empty
-      end
-    end
-
-    def caption(*args)
-      if block_given?
-        @caption = Caption.new(*args, Proc.new)
-      elsif args.length > 0
-        @caption = Caption.new(*args)
-      else
-        @caption
-      end
+    def caption(*args, &block)
+      @caption = Caption.new(@view_context, *args, &block)
     end
 
     def column(name, options = {}, &block)
       @columns.push(
-        Column.new(self, name, {show_sort: @show_sorts}.merge(options), &block)
+        Column.new(@view_context, name, options, &block)
       )
+    end
+
+    def empty(*args, &block)
+      @empty = Empty.new(@view_context, *args, &block)
+    end
+
+    def render
+      caption_html = (@caption ? @caption.render : '').html_safe
+
+      @view_context.content_tag(:table, caption_html + head + body, @attrs)
+    end
+
+    private
+
+    def head
+      @view_context.content_tag(:thead, tr(@columns.map(&:render_header_cell)))
+    end
+
+    def body
+      content =
+        if @empty && rows.empty?
+          @empty.render(@columns.size)
+        else
+          rows.join.html_safe
+        end
+
+      @view_context.content_tag(:tbody, content)
+    end
+
+    def rows
+      @rows ||= @elements.map { |element| row(element) }
+    end
+
+    def row(element)
+      tr(@columns.map { |column| column.render_row_cell(element) })
+    end
+
+    def tr(cells)
+      @view_context.content_tag(:tr, cells.join.html_safe) if !cells.empty?
     end
   end
 end
