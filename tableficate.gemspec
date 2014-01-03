@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
 require 'tableficate/version'
 
 Gem::Specification.new do |gem|
@@ -19,13 +20,9 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ['lib']
 
-  gem.add_dependency 'rails', '>= 3.1'
+  gem.add_dependency 'actionpack', '>= 3.1'
 
-  gem.add_development_dependency 'rake'
-  gem.add_development_dependency 'rspec-rails'
-  gem.add_development_dependency 'sqlite3'
-  gem.add_development_dependency 'capybara'
-  gem.add_development_dependency 'guard'
-  gem.add_development_dependency 'guard-rspec'
-  gem.add_development_dependency 'rb-fsevent'
+  gem.add_development_dependency 'rake', '~> 10.1'
+  gem.add_development_dependency 'rspec', '~> 2.14'
+  gem.add_development_dependency 'guard-rspec', '~> 4.2'
 end
