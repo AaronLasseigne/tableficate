@@ -13,7 +13,7 @@ module Tableficate
     end
 
     def render_row_cell(item)
-      @view_context.content_tag(:td, cell_text(item), @cell_attrs)
+      @view_context.content_tag(:td, cell_text(item), cell_attrs(item))
     end
 
     private
@@ -23,6 +23,19 @@ module Tableficate
         @block.call(item)
       else
         item.send(@name)
+      end
+    end
+
+    def cell_attrs(item)
+      @cell_attrs.keys.each_with_object({}) do |name, h|
+        value = @cell_attrs[name]
+
+        h[name] =
+          if value.is_a?(Proc)
+            value.call(item)
+          else
+            value
+          end
       end
     end
   end

@@ -90,13 +90,19 @@ describe Tableficate::Column do
     end
 
     context 'cell attributes' do
-      before do
-        options.merge!(cell_attrs: {id: 'id', class: 'class'})
-      end
+      let(:options) { {cell_attrs: {id: 'id', class: 'class'}} }
 
       it 'adds the attributes to the td tag' do
         expect(output).to match /<td .*?id="id".*?>/
         expect(output).to match /<td .*?class="class".*?>/
+      end
+
+      context 'an attribute value is a lambda' do
+        let(:options) { {cell_attrs: {id: ->(i) { i.created_at }}} }
+
+        it 'calls the lamda with the element and returns the value' do
+          expect(output).to match /<td .*?id="#{item.created_at}".*?>/
+        end
       end
     end
   end
