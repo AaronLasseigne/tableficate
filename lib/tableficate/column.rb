@@ -8,11 +8,11 @@ module Tableficate
       @cell_attrs   = @attrs.delete(:cell_attrs)   || {}
     end
 
-    def render_header_cell
+    def render_header
       @view_context.content_tag(:th, @header, @header_attrs)
     end
 
-    def render_row_cell(item)
+    def render_cell(item)
       @view_context.content_tag(:td, cell_text(item), cell_attrs(item))
     end
 

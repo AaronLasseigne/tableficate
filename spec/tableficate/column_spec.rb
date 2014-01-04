@@ -9,8 +9,8 @@ describe Tableficate::Column do
     described_class.new(view_context, name, options)
   end
 
-  describe '#render_header_cell' do
-    let(:output) { column.render_header_cell }
+  describe '#render_header' do
+    let(:output) { column.render_header }
 
     it 'returns a th' do
       expect(output).to match /\A<th>.*<\/th>\z/
@@ -45,9 +45,9 @@ describe Tableficate::Column do
     end
   end
 
-  describe '#render_row_cell(item)' do
+  describe '#render_cell(item)' do
     let(:item) { double(created_at: Time.now) }
-    let(:output) { column.render_row_cell(item) }
+    let(:output) { column.render_cell(item) }
 
     it 'returns a td' do
       expect(output).to match /\A<td>.*<\/td>\z/

@@ -33,7 +33,7 @@ module Tableficate
     private
 
     def head
-      @view_context.content_tag(:thead, tr(@columns.map(&:render_header_cell)))
+      @view_context.content_tag(:thead, tr(@columns.map(&:render_header)))
     end
 
     def body
@@ -52,7 +52,7 @@ module Tableficate
     end
 
     def row(element)
-      tr(@columns.map { |column| column.render_row_cell(element) })
+      tr(@columns.map { |column| column.render_cell(element) })
     end
 
     def tr(cells)
