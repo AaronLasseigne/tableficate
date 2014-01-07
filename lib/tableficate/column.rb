@@ -22,7 +22,7 @@ module Tableficate
       if @block
         @block.call(item)
       else
-        item.send(@name)
+        item.public_send(@name)
       end
     end
 
